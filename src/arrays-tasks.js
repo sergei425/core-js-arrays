@@ -41,13 +41,20 @@ function getIntervalArray(start, end) {
  *    sumArrays([10, 20, 30], [5, 10, 15]) => [15, 30, 45]
  *    sumArrays([-1, 0, 1], [1, 2, 3, 4]) => [0, 2, 4, 4]
  */
+function getNewArray(arr1, arr2) {
+  return arr1.map((el, index) => {
+    if (!arr2[index]) {
+      return el + 0;
+    }
+    return el + arr2[index];
+  });
+}
+
 function sumArrays(arr1, arr2) {
-  const foo = [];
-  for (let i = 0; i <= arr1.length; i += 1) {
-    const result = arr1[i] + arr2[i];
-    foo.push(result);
+  if (arr1.length > arr2.length) {
+    return getNewArray(arr1, arr2);
   }
-  return foo;
+  return getNewArray(arr2, arr1);
 }
 
 /**
@@ -129,7 +136,14 @@ function getStringsLength(arr) {
  *   getAverage([ 2, 3, 3 ])  => 2,67
  */
 function getAverage(arr) {
-  return arr.length > 0 ? arr.reduce((acc, el) => acc + el, 0) / arr.length : 0;
+  if (arr.length === 0) {
+    return 0;
+  }
+
+  const sum = arr.reduce((acc, el) => acc + el, 0);
+  const average = sum / arr.length;
+
+  return Number.isInteger(average) ? average : +average.toFixed(2);
 }
 
 /**
@@ -143,7 +157,7 @@ function getAverage(arr) {
  *    isSameLength(['cat', 'dog', 'elephant']) => false
  */
 function isSameLength(arr) {
-  return arr.slice(1).some((el) => el.length === arr[0].length);
+  return arr.slice(1).every((el) => el.length === arr[0].length);
 }
 
 /**
@@ -158,7 +172,7 @@ function isSameLength(arr) {
  *    isValueEqualsIndex([10, 20, 30, 40, 50]) => false
  */
 function isValueEqualsIndex(arr) {
-  return arr.toSorted().every((el, index) => el === index);
+  return arr.toSorted().some((el, index) => el === index);
 }
 
 /**
@@ -206,7 +220,7 @@ function getHead(arr, n) {
  *    getTail([ 'a', 'b', 'c', 'd'], 0) => []
  */
 function getTail(arr, n) {
-  return arr.slice(n);
+  return n === 0 ? [] : arr.slice(arr.length - n);
 }
 
 /**
@@ -501,8 +515,18 @@ function findCommonElements(arr1, arr2) {
  *    findLongestIncreasingSubsequence([3, 10, 2, 1, 20]) => longest is [3, 10] and [1, 20] => 2
  *    findLongestIncreasingSubsequence([50, 3, 10, 7, 40, 80]) => longest is [7, 40, 80] => 3
  */
-function findLongestIncreasingSubsequence(/* nums */) {
-  throw new Error('Not implemented');
+function findLongestIncreasingSubsequence(nums) {
+  let count = 1;
+  const counts = [];
+  for (let i = 0; i < nums.length; i += 1) {
+    if (nums[i] < nums[i + 1]) {
+      count += 1;
+    } else {
+      counts.push(count);
+      count = 1;
+    }
+  }
+  return Math.max(...counts);
 }
 
 /**
