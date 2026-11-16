@@ -21,11 +21,7 @@
  *    getIntervalArray(3, 3) => [ 3 ]
  */
 function getIntervalArray(start, end) {
-  const foo = [];
-  for (let i = start; i <= end; i += 1) {
-    foo.push(i);
-  }
-  return foo;
+  return Array.from({ length: end - start + 1 }, (_, index) => start + index);
 }
 
 /**
@@ -354,11 +350,12 @@ function calculateBalance(arr) {
  *    createChunks([10, 20, 30, 40, 50], 1) => [[10], [20], [30], [40], [50]]
  */
 function createChunks(arr, chunkSize) {
-  const chunks = [];
-  for (let i = 0; i < arr.length; i += chunkSize) {
-    chunks.push(arr.slice(i, i + chunkSize));
-  }
-  return chunks;
+  const chunksCount = Math.ceil(arr.length / chunkSize);
+
+  return Array.from({ length: chunksCount }, (_, index) => {
+    const start = index * chunkSize;
+    return arr.slice(start, start + chunkSize);
+  });
 }
 
 /**
@@ -563,11 +560,22 @@ function propagateItemsByPositionIndex(arr) {
  *    shiftArray([10, 20, 30, 40, 50], -3) => [40, 50, 10, 20, 30]
  */
 function shiftArray(arr, n) {
-  for (let i = 0; i < Math.abs(n); i += 1) {
-    const el = arr.pop();
-    arr.unshift(el);
+  if (arr.length === 0) return [];
+
+  const steps = n % arr.length;
+  const result = [...arr];
+
+  if (steps > 0) {
+    for (let i = 0; i < steps; i += 1) {
+      result.unshift(result.pop());
+    }
+  } else if (steps < 0) {
+    for (let i = 0; i < Math.abs(steps); i += 1) {
+      result.push(result.shift());
+    }
   }
-  return arr;
+
+  return result;
 }
 
 /**
@@ -583,8 +591,21 @@ function shiftArray(arr, n) {
  *   sortDigitNamesByNumericOrder([ 'nine','eight','nine','eight' ]) => [ 'eight','eight','nine','nine']
  *   sortDigitNamesByNumericOrder([ 'one','one','one','zero' ]) => [ 'zero','one','one','one' ]
  */
-function sortDigitNamesByNumericOrder(/* arr */) {
-  throw new Error('Not implemented');
+function sortDigitNamesByNumericOrder(arr) {
+  const numsObj = {
+    zero: 0,
+    one: 1,
+    two: 2,
+    three: 3,
+    four: 4,
+    five: 5,
+    six: 6,
+    seven: 7,
+    eight: 8,
+    nine: 9,
+  };
+  if (arr.length === 0) return arr;
+  return arr.toSorted((prev, next) => numsObj[prev] - numsObj[next]);
 }
 
 /**
@@ -607,14 +628,12 @@ function sortDigitNamesByNumericOrder(/* arr */) {
  *
  */
 function swapHeadAndTail(arr) {
-  if (arr.length === 1 || arr.length === 0) {
-    return arr;
-  }
-  for (let i = 0; i < Math.floor(arr.length / 2); i += 1) {
-    const el = arr.pop();
-    arr.unshift(el);
-  }
-  return arr;
+  const mid = Math.floor(arr.length / 2);
+  const head = arr.slice(0, mid);
+  const tail = arr.slice(arr.length % 2 === 0 ? mid : mid + 1);
+  const middle = arr.length % 2 === 0 ? [] : [arr[mid]];
+
+  return [...tail, ...middle, ...head];
 }
 
 module.exports = {
